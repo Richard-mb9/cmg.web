@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Navigate } from 'react-router-dom';
+
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,21 +14,67 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Alert from '@mui/material/Alert';
+import axios from 'axios';
+
+
+import { getToken } from '../../../../integrations/auth';
+import PageLoading from '../../../../shared/components/PageLoading';
+import { useRedirect } from '../../../../context/redirect/useRedirect';
 
 const theme = createTheme();
 
-export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+type AlertType = 'error' | 'warning' | 'info' | 'success';
+type displayAlertType = 'none' | 'flex';
 
-  return (
+export default function SignIn() {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('')
+  const [textAlert, setTextAlert] = useState<string>('')
+  const [alertType, setAlertType] = useState<AlertType>('error')
+  const [displayAlert, setDisplayAlert] = useState<displayAlertType>('none')
+  const [isAuth, setIsAuth] = useState(!!localStorage.getItem('access_token'))
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [redirect] = useRedirect();
+
+  const renderAlert = (type: AlertType, text: string) => {
+    setTextAlert(text);
+    setAlertType(type);
+    setDisplayAlert('flex');
+  }
+
+  const send = async ()=>{
+    try{
+      const response = await getToken(
+        {
+          email: email,
+          password: password
+        }
+      )
+      
+      if(response.status === 200){
+        localStorage.setItem('access_token', response.data.access_token)
+        setIsAuth(true);
+        redirect('/');
+      }
+    }
+    catch (error: unknown){
+      if(axios.isAxiosError(error) && error.response){
+        if(error.response.status === 403){
+          renderAlert('error', 'Usuario temporariamente bloqueado por excesso de tentativas, tente novamente após 10 minutos');
+        }
+        else if(error.response.status >= 400 && error.response.status < 500 ){
+          renderAlert('error', 'verfique suas credenciais');
+        }
+      }
+    }
+    setIsLoading(false)
+  }
+
+  return  isAuth ? < Navigate to="/"/> : (
     <ThemeProvider theme={theme}>
+      <PageLoading open={isLoading} />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -43,7 +91,10 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Login
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box >
+            <Alert sx={{display: displayAlert }} severity={alertType}>{textAlert}</Alert>
+          </Box>
+          <Box sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -53,6 +104,11 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              value={email}
+              onChange={(event)=>setEmail(event.target.value)}
+              inputProps={{
+                "data-test-id": "input-email",
+              }}
             />
             <TextField
               margin="normal"
@@ -63,16 +119,22 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={password}
+              onChange={(event)=>setPassword(event.target.value)}
+              inputProps={{
+                "data-testid": "input-password",
+              }}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="lembrar-me"
             />
             <Button
-              type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              onClick={()=>send()}
+              data-testid="button-login"
             >
               Login
             </Button>

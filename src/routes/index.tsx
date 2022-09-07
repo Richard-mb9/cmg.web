@@ -1,28 +1,27 @@
 import React from 'react';
-import {BrowserRouter, Route, Routes, Navigate, useLocation} from 'react-router-dom';
+import {BrowserRouter, Route, Routes, Navigate} from 'react-router-dom';
 
-import AuthRoutes from '../modules/auth/pages/routes';
-import DashboardRoutes from '../modules/dashboard/pages/routes';
+import Dashboard from '../modules/dashboard/pages';
+import PageLogin from '../modules/auth/pages/login';
+import PageRegister from '../modules/auth/pages/register';
 
-/* type Props = {
-    children?: JSX.Element
-}
-
-const PrivateRoute = (props: any)=>{
-    const isAuth = ()=> false;
-    const location = useLocation()
-    const isLoginPage = location.pathname === '/login'
-    if(!isAuth() && !isLoginPage){
-        return <Navigate to='/login'/>
-    }
-    return props.children
-} */
 
 export default function DefaultRoutes(){
+
+    const createPrivateElement = (element: JSX.Element)=>{
+        if(!!localStorage.getItem('access_token')){
+            return element
+        }
+        else return <Navigate  to={"/login"}/>
+    }
+
     return (
             <BrowserRouter>
-                <DashboardRoutes/>
-                <AuthRoutes/>
+                <Routes>
+                    <Route element={createPrivateElement(<Dashboard/>)} path='/*'/>
+                    <Route element={<PageRegister/>} path='/register'/>
+                    <Route element={<PageLogin/>} path='/login' />
+                </Routes>
             </BrowserRouter>
     )
 }

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { Navigate } from 'react-router-dom';
+
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,7 +15,9 @@ import Alert from '@mui/material/Alert'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 
-import {createUser} from '../../api'
+import PageLoading from '../../../../shared/components/PageLoading';
+import { createUserStore, getToken } from '../../../../integrations/auth';
+import { useRedirect } from '../../../../context/redirect/useRedirect';
 
 type AlertType = 'error' | 'warning' | 'info' | 'success';
 type displayAlertType = 'none' | 'block';
@@ -30,6 +34,10 @@ export default function SignUp() {
     const [textAlert, setTextAlert] = useState<string>('')
     const [alertType, setAlertType] = useState<AlertType>('error')
     const [displayAlert, setDisplayAlert] = useState<displayAlertType>('none')
+    const [isLoading, setIsloading] = useState(false);
+    const [isAuth, setIsAuth] = useState(!!localStorage.getItem('access_token'))
+
+    const [ redirect ] = useRedirect();
 
     const renderAlert = (type: AlertType, text: string) => {
         setTextAlert(text);
@@ -67,7 +75,7 @@ export default function SignUp() {
         if(emailError || passwordError || confirmPassowordError){
             validateFields()
         }
-    }, [email, password, confirmPassword])
+    }, [email, password, confirmPassword]);
 
     const validate = ()=>{
         if(!validateFields()) return false
@@ -75,26 +83,46 @@ export default function SignUp() {
         return true
     }
 
+    const authenticate = async ()=>{
+        const response = await getToken({email, password})
+        if(response.status === 200){
+            localStorage.setItem('access_token', response.data.access_token);
+            redirect('/profile');
+            setIsAuth(true);
+        }
+    }
+
     const save = async () => {
-        if(!validate()) return
-        try{
-            const response = await createUser({
-                email, password
-            })
-        }catch(error: unknown){
-            if(axios.isAxiosError(error)){
-                if(error.response?.status === 409){
-                    renderAlert('error', 'Este email ja esta cadastrado para outro usuario');
-                    setEmailError(true);
+        setIsloading(true);
+        if(validate()){
+            try{
+                const response = await createUserStore({
+                    email, password, profiles: ['STORE'],
+                })
+                if(response.status === 201){
+                    await authenticate()
+                }
+            }catch(error: unknown){
+                if(axios.isAxiosError(error)){
+                    if(error.response?.status === 409){
+                        renderAlert('error', 'Este email ja esta cadastrado para outro usuario');
+                        setEmailError(true);
+                    }
                 }
             }
+            finally {
+                setIsloading(false);
+            }
         }
-        
+        setIsloading(false);
     };
 
-    return (
+    
+
+    return isAuth ? < Navigate to="/"/> : (
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs">
+                <PageLoading open={isLoading}/>
                 <CssBaseline />
                 <Box
                     sx={{

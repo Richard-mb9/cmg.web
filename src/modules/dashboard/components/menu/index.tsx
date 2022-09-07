@@ -18,6 +18,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
+import {useRedirect} from '../../../../context/redirect/useRedirect';
 
 
 import LinkDashboardMenu from '../linkDashboardMenu';
@@ -34,7 +35,14 @@ interface Props {
 export default function Menu(props: Props) {
     const { window, mobileOpen, handleDrawerToggle, drawerWidth } = props;
 
+    const [ redirect ] = useRedirect();
+
     const container = window !== undefined ? () => window().document.body : undefined;
+
+    const logOut = ()=>{
+        localStorage.clear()
+        redirect('/login')
+    }
 
     const menu = (
         <div>
@@ -46,18 +54,18 @@ export default function Menu(props: Props) {
                 />
             <Divider />
             <List>
-                <LinkDashboardMenu to='/dashboard' text='Home' icon={<HomeIcon/>} />
-                <LinkDashboardMenu to='/dashboard/products' text='Produtos' icon={<CategoryIcon/>} />
-                <LinkDashboardMenu to='/dashboard/orders' text='Pedidos' icon={<DescriptionIcon/>} />
-                <LinkDashboardMenu to='/dashboard/tables' text='Mesas' icon={<TableBarIcon/>} />
-                <LinkDashboardMenu to='/dashboard/workers' text='Funcionarios' icon={<GroupIcon/>} />
+                <LinkDashboardMenu to='/' text='Home' icon={<HomeIcon/>} />
+                <LinkDashboardMenu to='/products' text='Produtos' icon={<CategoryIcon/>} />
+                <LinkDashboardMenu to='/orders' text='Pedidos' icon={<DescriptionIcon/>} />
+                <LinkDashboardMenu to='/tables' text='Mesas' icon={<TableBarIcon/>} />
+                <LinkDashboardMenu to='/workers' text='Funcionarios' icon={<GroupIcon/>} />
             </List>
             <Divider />
             <List>
-                <LinkDashboardMenu to='/dashboard/profile' text='Perfil' icon={<AccountCircleIcon/>} />
-                <LinkDashboardMenu to='/dashboard/settings' text='Configurações' icon={<SettingsIcon/>} />
+                <LinkDashboardMenu to='/profile' text='Perfil' icon={<AccountCircleIcon/>} />
+                <LinkDashboardMenu to='/settings' text='Configurações' icon={<SettingsIcon/>} />
                 <Divider />
-                <LinkDashboardMenu to='/#' text='Sair' icon={<LogoutIcon/>} />
+                <LinkDashboardMenu to='' onClick={()=>logOut()} isButton text='Sair' icon={<LogoutIcon/>} />
             </List>
         </div>
     )
