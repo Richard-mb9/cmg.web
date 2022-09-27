@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
 
-//import Route from '../../../routes/route';
 import Home from './home';
 import NavBar from '../components/navBar';
 import Menu from '../components/menu';

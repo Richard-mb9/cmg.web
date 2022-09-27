@@ -11,7 +11,7 @@ import Button from '@mui/material/Button';
 
 
 const style = {
-    position: 'absolute' as 'absolute',
+    position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -29,7 +29,7 @@ interface IProps {
     setOpen: (open: boolean) => void;
 }
 
-export default function (props: IProps) {
+export default function Mod(props: IProps) {
     const { open, setOpen } = props;
 
     const handleClose = () => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import Avatar from '@mui/material/Avatar';
@@ -18,9 +18,10 @@ import Alert from '@mui/material/Alert';
 import axios from 'axios';
 
 
-import { getToken } from '../../../../integrations/auth';
 import PageLoading from '../../../../shared/components/PageLoading';
 import { useRedirect } from '../../../../context/redirect/useRedirect';
+import { SecurityContext } from '../../../../context/securityContext';
+import { useAuthApi } from '../../../../context/hooks/integrations';
 
 const theme = createTheme();
 
@@ -33,10 +34,12 @@ export default function SignIn() {
   const [textAlert, setTextAlert] = useState<string>('')
   const [alertType, setAlertType] = useState<AlertType>('error')
   const [displayAlert, setDisplayAlert] = useState<displayAlertType>('none')
-  const [isAuth, setIsAuth] = useState(!!localStorage.getItem('access_token'))
   const [isLoading, setIsLoading] = useState(false)
 
   const [redirect] = useRedirect();
+
+  const {isAuth, setIsAuth} = useContext(SecurityContext);
+  const { getToken } = useAuthApi();
 
   const renderAlert = (type: AlertType, text: string) => {
     setTextAlert(text);
@@ -56,7 +59,7 @@ export default function SignIn() {
       if(response.status === 200){
         localStorage.setItem('access_token', response.data.access_token)
         setIsAuth(true);
-        redirect('/');
+        redirect('');
       }
     }
     catch (error: unknown){

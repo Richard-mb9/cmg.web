@@ -1,12 +1,6 @@
-import React from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import Divider from '@mui/material/Divider';
-import Toolbar from '@mui/material/Toolbar';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import CardMedia from "@mui/material/CardMedia";
@@ -18,12 +12,16 @@ import GroupIcon from '@mui/icons-material/Group';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
+
 import {useRedirect} from '../../../../context/redirect/useRedirect';
 
 
 import LinkDashboardMenu from '../linkDashboardMenu';
 
 import defaultImage from '../../../../static/images/semImagem.png';
+
+import { DataContext } from '../../../../context/contextData';
+import { SecurityContext } from '../../../../context/securityContext'; 
 
 interface Props {
     window?: () => Window;
@@ -35,12 +33,16 @@ interface Props {
 export default function Menu(props: Props) {
     const { window, mobileOpen, handleDrawerToggle, drawerWidth } = props;
 
+    const { personalData } = useContext(DataContext);
+    const { setIsAuth } = useContext(SecurityContext);
+
     const [ redirect ] = useRedirect();
 
     const container = window !== undefined ? () => window().document.body : undefined;
 
     const logOut = ()=>{
-        localStorage.clear()
+        localStorage.clear();
+        setIsAuth(false);
         redirect('/login')
     }
 
@@ -48,9 +50,9 @@ export default function Menu(props: Props) {
         <div>
             <CardMedia
                     component="img"
-                    className='productImageCard'
-                    image={defaultImage}
-                    alt="Live from space album cover"
+                    image={personalData?.image_url || defaultImage}
+                    alt="storeImageMenu"
+                    sx={{width: 151, margin: 'auto'}}
                 />
             <Divider />
             <List>

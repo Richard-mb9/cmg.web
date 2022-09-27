@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import { Navigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react'
 
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -16,8 +15,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 
 import PageLoading from '../../../../shared/components/PageLoading';
-import { createUserStore, getToken } from '../../../../integrations/auth';
 import { useRedirect } from '../../../../context/redirect/useRedirect';
+import { SecurityContext } from '../../../../context/securityContext';
+import { asyncLocalStorage } from '../../../../utils/asyncLocalStorage';
+import { useAuthApi } from '../../../../context/hooks/integrations';
 
 type AlertType = 'error' | 'warning' | 'info' | 'success';
 type displayAlertType = 'none' | 'block';
@@ -35,9 +36,11 @@ export default function SignUp() {
     const [alertType, setAlertType] = useState<AlertType>('error')
     const [displayAlert, setDisplayAlert] = useState<displayAlertType>('none')
     const [isLoading, setIsloading] = useState(false);
-    const [isAuth, setIsAuth] = useState(!!localStorage.getItem('access_token'))
 
     const [ redirect ] = useRedirect();
+
+    const { setIsAuth, setAccessToken } = useContext(SecurityContext);
+    const { createUserStore, getToken } = useAuthApi();
 
     const renderAlert = (type: AlertType, text: string) => {
         setTextAlert(text);
@@ -75,6 +78,7 @@ export default function SignUp() {
         if(emailError || passwordError || confirmPassowordError){
             validateFields()
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [email, password, confirmPassword]);
 
     const validate = ()=>{
@@ -83,12 +87,13 @@ export default function SignUp() {
         return true
     }
 
-    const authenticate = async ()=>{
-        const response = await getToken({email, password})
+    const createPersonalDataAndauthenticate = async ()=>{
+        const response = await getToken({email, password});
         if(response.status === 200){
-            localStorage.setItem('access_token', response.data.access_token);
-            redirect('/profile');
+            await asyncLocalStorage.setItem('access_token', response.data.access_token);
+            setAccessToken(response.data.access_token)
             setIsAuth(true);
+            redirect('/profile');
         }
     }
 
@@ -100,7 +105,7 @@ export default function SignUp() {
                     email, password, profiles: ['STORE'],
                 })
                 if(response.status === 201){
-                    await authenticate()
+                    await createPersonalDataAndauthenticate()
                 }
             }catch(error: unknown){
                 if(axios.isAxiosError(error)){
@@ -117,9 +122,7 @@ export default function SignUp() {
         setIsloading(false);
     };
 
-    
-
-    return isAuth ? < Navigate to="/"/> : (
+    return (
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs">
                 <PageLoading open={isLoading}/>
