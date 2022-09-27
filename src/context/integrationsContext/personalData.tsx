@@ -33,12 +33,7 @@ export default function PersonalDataIntegration({children}: PropsWithChildren<un
 
     async function createAndUpdatePersonalData(data: ICreateAndUpdatePersonalData){
         try{
-            const dataToCreate = {
-                cnpj: data.cnpj,
-                corporate_name: data.corporateName,
-                name: data.name
-            }
-            const response = await api.post<IPersonalData>('/stores', JSON.parse(JSON.stringify(dataToCreate)));
+            const response = await api.post<IPersonalData>('/stores', JSON.parse(JSON.stringify(data)));
             return response.data
         }
         catch(error: unknown){

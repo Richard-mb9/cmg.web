@@ -34,7 +34,7 @@ export default function BaseApi({children}: PropsWithChildren<unknown>){
 
         instance.interceptors.request.use((config: AxiosRequestConfig)=>{
             const newConfig = { ...config };
-            newConfig.url = `api/${config.url}`;
+            //newConfig.url = `api/${config.url}`;
 
             if (newConfig.headers && newConfig.headers['Content-Type'] === 'multipart/form-data')
                 return newConfig;

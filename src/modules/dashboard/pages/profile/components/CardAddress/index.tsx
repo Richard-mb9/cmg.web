@@ -105,7 +105,7 @@ export default function CardAddress(){
                 setInitialState(data)
                 setAddress({
                     id,
-                    user_id: getIdFromToken(),
+                    userId: getIdFromToken(),
                     ...data
                 })
                 setAddressId(id)
@@ -118,7 +118,7 @@ export default function CardAddress(){
                 setInitialState(data)
                 setAddress({
                     id: addressId,
-                    user_id: getIdFromToken(),
+                    userId: getIdFromToken(),
                     ...data
                 })
                 setAddressId(response.id)

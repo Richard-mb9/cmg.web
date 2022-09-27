@@ -4,6 +4,7 @@ import ProductCard from './components/productCard';
 import Button from '@mui/material/Button';
 import InputSearch from '../../components/inputSearch';
 import ModalEditProduct from './components/modalEditProduct';
+import { useRedirect } from '../../../../context/redirect/useRedirect';
 
 const PRODUCTNAME = 'Nome do Produto que pode ser bem grande'
 const DESCRIPTION = `a descrição do produto tambem pode ser bem grande, ja que devera conter a maioria dos igrendientes do produto,
@@ -11,6 +12,8 @@ no hamburger por exemplo quantas carnes, e os tipos, a mesma coisa nos outros pr
 
 export default function Products() {
     const [modalOpen, setModalOpen] = useState(false);
+
+    const [ redirect ] = useRedirect();
 
     return (
         <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
@@ -31,7 +34,7 @@ export default function Products() {
                 <div style={{display: 'flex',textAlign: 'right', alignItems: "center" }}>
                     <Button 
                         variant="contained" 
-                        onClick={()=> setModalOpen(!modalOpen)}
+                        onClick={()=> redirect('/products/create')}
                     >
                         NOVO PRODUTO
                     </Button>

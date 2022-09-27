@@ -9,7 +9,7 @@ import PageRegister from '../modules/auth/pages/register';
 export default function DefaultRoutes(){
 
     const createPrivateElement = (element: JSX.Element)=>{
-        if(!!localStorage.getItem('access_token')){
+        if(!!localStorage.getItem('accessToken')){
             return element
         }
         else return <Navigate  to={"/login"}/>

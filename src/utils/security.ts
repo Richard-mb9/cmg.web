@@ -1,7 +1,7 @@
 import jwtDecode from 'jwt-decode';
 
 
-export const isAuthenticated = !!localStorage.getItem('access_token');
+export const isAuthenticated = !!localStorage.getItem('accessToken');
 
 interface ITokenData {
     id: number;
@@ -11,7 +11,7 @@ interface ITokenData {
 }
 
 const getToken = () => {
-    return localStorage.getItem('access_token');
+    return localStorage.getItem('accessToken');
 }
 
 const getTokenData = (): ITokenData | undefined =>{

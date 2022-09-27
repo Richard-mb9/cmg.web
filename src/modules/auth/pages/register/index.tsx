@@ -90,8 +90,8 @@ export default function SignUp() {
     const createPersonalDataAndauthenticate = async ()=>{
         const response = await getToken({email, password});
         if(response.status === 200){
-            await asyncLocalStorage.setItem('access_token', response.data.access_token);
-            setAccessToken(response.data.access_token)
+            await asyncLocalStorage.setItem('accessToken', response.data.accessToken);
+            setAccessToken(response.data.accessToken)
             setIsAuth(true);
             redirect('/profile');
         }

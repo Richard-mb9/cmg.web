@@ -51,9 +51,10 @@ export default function CardPersonalData(){
                 ...personalData,
                 name,
                 cnpj,
-                corporate_name: corporateName
+                corporateName: corporateName
             })
         }
+        setIsEditing(false);
         setIsLoading(false);
     }
 
@@ -61,11 +62,11 @@ export default function CardPersonalData(){
         if(personalData){
             setName(personalData.name || '');
             setCnpj(personalData.cnpj || '');
-            setCorporateName(personalData.corporate_name || '');
+            setCorporateName(personalData.corporateName || '');
             setInitialState({
                 name: personalData.name || '',
                 cnpj: personalData.cnpj || '',
-                corporateName: personalData.corporate_name || '',
+                corporateName: personalData.corporateName || '',
             })
         }
         

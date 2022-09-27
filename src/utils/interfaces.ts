@@ -1,6 +1,6 @@
 export interface IAddress {
     id: number;
-    user_id: number;
+    userId: number;
     street: string;
     number?: string;
     complement?: string;
@@ -13,17 +13,17 @@ export interface IAddress {
 
 export interface IPersonalData {
     id: number;
-    user_id: number;
+    userId: number;
     cnpj?: string;
-    corporate_name?: string;
+    corporateName?: string;
     description?: string;
-    image_url?: string;
+    imageUrl?: string;
     name?: string;
 }
 
 export interface IAddress {
     id: number;
-    user_id: number;
+    userId: number;
     street: string;
     number?: string;
     complement?: string;

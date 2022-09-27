@@ -64,7 +64,7 @@ export default function CardPhoto(props: IProps){
         if(selectedFile && personalData?.id){
             const response = await updateImageStore(personalData.id, selectedFile);
             if(response && personalData){
-                setPersonalData({...personalData, image_url: preview});
+                setPersonalData({...personalData, imageUrl: preview});
             }
         }
         if(changeDescription && personalData){
@@ -82,7 +82,7 @@ export default function CardPhoto(props: IProps){
     const clear = ()=>{
         if(personalData){
             setSelectedFile(undefined);
-            setPreview(personalData.image_url);
+            setPreview(personalData.imageUrl);
             setDescription(personalData.description || '')
         }
         setIsEditing(false)
@@ -102,7 +102,7 @@ export default function CardPhoto(props: IProps){
                     <CardMedia
                         component="img"
                         sx={{ width: 151, margin: "auto"}}
-                        src={(preview || personalData?.image_url) || defaultImage}
+                        src={(preview || personalData?.imageUrl) || defaultImage}
                         alt="storeImage"
                     />
                     <input
@@ -158,7 +158,7 @@ export default function CardPhoto(props: IProps){
                 <CardMedia
                     component="img"
                     sx={{ width: 151}}
-                    src={personalData?.image_url || defaultImage}
+                    src={personalData?.imageUrl || defaultImage}
                     alt="storeImage"
                 />
                 <Box sx={{ display: "flex", flexDirection: "column" }}>

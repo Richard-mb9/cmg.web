@@ -57,7 +57,7 @@ export default function SignIn() {
       )
       
       if(response.status === 200){
-        localStorage.setItem('access_token', response.data.access_token)
+        localStorage.setItem('accessToken', response.data.accessToken)
         setIsAuth(true);
         redirect('');
       }

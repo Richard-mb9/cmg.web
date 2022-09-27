@@ -23,7 +23,7 @@ interface ISecurityContext {
 export const SecurityContext = createContext({} as ISecurityContext);
 
 export default function Security({children}: PropsWithChildren<unknown>){
-    const [isAuth, setIsAuth] = useState(!!localStorage.getItem('access_token'));
+    const [isAuth, setIsAuth] = useState(!!localStorage.getItem('accessToken'));
     const [accessToken, setAccessToken] = useState<string | undefined>();
     const [tokenData, setTokenData] = useState<ITokenData | undefined>();
 
@@ -31,8 +31,8 @@ export default function Security({children}: PropsWithChildren<unknown>){
         if(isAuth && accessToken){
             setTokenData(jwtDecode(accessToken));
         }
-        else if (isAuth && !!!accessToken && !!localStorage.getItem('access_token')){
-            setAccessToken(localStorage.getItem('access_token') as string)
+        else if (isAuth && !!!accessToken && !!localStorage.getItem('accessToken')){
+            setAccessToken(localStorage.getItem('accessToken') as string)
         }
         else{
             setAccessToken(undefined);

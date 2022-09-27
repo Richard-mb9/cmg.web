@@ -50,7 +50,7 @@ export default function Menu(props: Props) {
         <div>
             <CardMedia
                     component="img"
-                    image={personalData?.image_url || defaultImage}
+                    image={personalData?.imageUrl || defaultImage}
                     alt="storeImageMenu"
                     sx={{width: 151, margin: 'auto'}}
                 />
