@@ -3,8 +3,8 @@ import { useSnackbar } from '../notification/useSnackbar';
 import axios from 'axios';
 import PageLoading from '../../shared/components/PageLoading';
 import { SecurityContext } from '../securityContext';
-import { useAddressApi, usePersonalDataApi, useTelephoneApi } from '../hooks/integrations';
-import { IAddress, IPersonalData, TelephoneType } from '../../utils/interfaces';
+import { usePersonalDataApi } from '../hooks/integrations';
+import { IAddress, IPersonalData, TelephoneType, IProduct, IProductCategories } from '../../utils/interfaces';
 
 
 interface IDataContext {
@@ -14,6 +14,12 @@ interface IDataContext {
     setAddress: (value: IAddress)=> void;
     telephones: TelephoneType[];
     setTelephones: (value: TelephoneType[])=>void;
+    products: IProduct[];
+    setProducts: (value: IProduct[]) => void;
+    productCategories: IProductCategories[];
+    setProductCategories: (value: IProductCategories[]) => void;
+    currentStoreId: number | undefined;
+    setCurrentStoreId: (value: number) => void;
 }
 
 export const DataContext = createContext({} as IDataContext);
@@ -24,6 +30,9 @@ export default function ContextData({children}: PropsWithChildren<unknown>){
     const [personalData, setPersonalData] = useState<IPersonalData | undefined>();
     const [address, setAddress] = useState<IAddress | undefined>();
     const [telephones, setTelephones] = useState<TelephoneType[]>([]);
+    const [products, setProducts] = useState<IProduct[]>([]);
+    const [productCategories, setProductCategories] = useState<IProductCategories[]>([]);
+    const [currentStoreId, setCurrentStoreId] = useState<number | undefined>()
 
     const [openSnackbar] = useSnackbar();
     const {isAuth, accessToken, tokenData} = useContext(SecurityContext);
@@ -39,6 +48,9 @@ export default function ContextData({children}: PropsWithChildren<unknown>){
                 setAddress(data.addresses.length ? data.addresses[0] : undefined);
                 setTelephones(data.telephones);
                 setPersonalData(data.store)
+                setProducts(data.products);
+                setProductCategories(data.productsCategories);
+                setCurrentStoreId(data.store.id);
             }
         }
         catch(error: unknown){
@@ -70,6 +82,12 @@ export default function ContextData({children}: PropsWithChildren<unknown>){
                 setAddress,
                 telephones,
                 setTelephones,
+                products,
+                setProducts,
+                productCategories,
+                setProductCategories,
+                currentStoreId,
+                setCurrentStoreId
             }
         }>
             <PageLoading open={isLoading}/>

@@ -1,6 +1,6 @@
 import React, { createContext, PropsWithChildren, useContext } from 'react';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { camelizeKeys, decamelizeKeys } from 'humps';
+import { camelizeKeys, decamelizeKeys, decamelize } from 'humps';
 import { SecurityContext } from '../securityContext';
 
 
@@ -34,7 +34,6 @@ export default function BaseApi({children}: PropsWithChildren<unknown>){
 
         instance.interceptors.request.use((config: AxiosRequestConfig)=>{
             const newConfig = { ...config };
-            //newConfig.url = `api/${config.url}`;
 
             if (newConfig.headers && newConfig.headers['Content-Type'] === 'multipart/form-data')
                 return newConfig;

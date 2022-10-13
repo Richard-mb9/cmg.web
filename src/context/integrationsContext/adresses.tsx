@@ -1,6 +1,5 @@
 import React, { createContext ,useContext, PropsWithChildren } from 'react';
 import { BaseApiContext } from './baseApi';
-import { AxiosResponse } from 'axios';
 import { IAddress } from '../../utils/interfaces';
 import { useSnackbar } from '../notification/useSnackbar';
 import axios from 'axios';

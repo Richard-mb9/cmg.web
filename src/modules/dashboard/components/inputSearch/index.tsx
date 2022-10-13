@@ -27,7 +27,7 @@ const stylesDefault = {
 }
 
 
-export default function CustomizedInputBase(props: IProps) {
+export default function InputSearch(props: IProps) {
   const { styles, placeholder, onChange, onSearch, onSelect, value } = props;
 
   const handleOnselect = (event: ChangeEvent<HTMLInputElement>) =>{

@@ -19,11 +19,12 @@ const style = {
 interface IProps {
     open: boolean;
     setOpen: (open: boolean) => void;
+    action: ()=> void;
 }
 
 
-export default function (props: IProps) {
-    const { open, setOpen } = props;
+export default function ModalDeleteOpen(props: IProps) {
+    const { open, setOpen, action } = props;
 
     const handleClose = () => {
         setOpen(false);
@@ -45,7 +46,7 @@ export default function (props: IProps) {
                     </Box>
                     <Box sx={{display: 'flex', justifyContent: 'space-evenly'}}>
                         <Button
-                            onClick={() => { }}
+                            onClick={action}
                             color={'success'}
                             sx={{ margin: 1 }} variant="outlined"
                         >

@@ -14,6 +14,8 @@ import Profile from './profile';
 import Settings from './settings';
 import Workers from './workers';
 import CreateProduct from './products/pages/create';
+import UpdateProduct from './products/pages/update';
+import ProductsCategories from './productsCategories';
 
 
 export default function ResponsiveDrawer(props: any) {
@@ -38,11 +40,13 @@ export default function ResponsiveDrawer(props: any) {
                     <Route element={<Home/>} path='/'/>
                     <Route element={<Products/>} path={`/products`}/>
                     <Route element={<CreateProduct/>} path={`/products/create`}/>
+                    <Route element={<UpdateProduct/>} path={`/products/:id`}/>
                     <Route element={<Orders/>} path='/orders'/>
                     <Route element={<Tables/>} path='/tables'/>
                     <Route element={<Profile/>} path='/profile'/>
                     <Route element={<Settings/>} path='/settings'/>
                     <Route element={<Workers/>} path='/workers'/>
+                    <Route element={<ProductsCategories/>} path='/products-categories'/>
                 </Routes>
                 
             </Box>

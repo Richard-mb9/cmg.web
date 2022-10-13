@@ -22,18 +22,20 @@ const style = {
 interface IProps {
     open: boolean;
     setOpen: (open: boolean) => void;
+    contentQrCode: string;
+    tableName: string;
 }
 
-export default function (props: IProps) {
+export default function ModalQrCode(props: IProps) {
     
-    const { open, setOpen } = props;
+    const { open, setOpen, contentQrCode, tableName } = props;
     const componentRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
     });
     const QrCode = () => (
         <div ref={componentRef} style={{width: 'max-content', margin: 40}}>
-            <QRCode tableName='Mesa 1' contentQrCode='https://www.nomedaaplicacao/1/mesas/1'/>
+            <QRCode tableName={tableName} contentQrCode={contentQrCode}/>
         </div> 
     )
     
@@ -43,33 +45,31 @@ export default function (props: IProps) {
     };
 
     return (
-        <div>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="parent-modal-title"
-                aria-describedby="parent-modal-description"
-            >
-                <Box sx={{ ...style, maxWidth: '100vw'}}>
-                    <QrCode />
-                    <Box sx={{display: 'flex', justifyContent: 'space-evenly', marginTop: 2}}>
-                        <Button
-                            onClick={handlePrint}
-                            color={'success'}
-                            sx={{ margin: 1 }} variant="outlined"
-                        >
-                            IMPRIMIR
-                        </Button>
-                        <Button
-                            onClick={() => handleClose()}
-                            color={'error'}
-                            sx={{ margin: 1 }} variant="outlined"
-                        >
-                            SAIR
-                        </Button>
-                    </Box>
+        <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+        >
+            <Box sx={{ ...style, maxWidth: '100vw'}}>
+                <QrCode />
+                <Box sx={{display: 'flex', justifyContent: 'space-evenly', marginTop: 2}}>
+                    <Button
+                        onClick={handlePrint}
+                        color={'success'}
+                        sx={{ margin: 1 }} variant="outlined"
+                    >
+                        IMPRIMIR
+                    </Button>
+                    <Button
+                        onClick={() => handleClose()}
+                        color={'error'}
+                        sx={{ margin: 1 }} variant="outlined"
+                    >
+                        SAIR
+                    </Button>
                 </Box>
-            </Modal>
-        </div>
+            </Box>
+        </Modal>  
     );
 }

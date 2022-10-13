@@ -1,19 +1,56 @@
-import React, {useState} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import Filters from './components/filters';
 import ProductCard from './components/productCard';
 import Button from '@mui/material/Button';
 import InputSearch from '../../components/inputSearch';
 import ModalEditProduct from './components/modalEditProduct';
-import { useRedirect } from '../../../../context/redirect/useRedirect';
+import {Link} from 'react-router-dom';
+import { DataContext } from '../../../../context/contextData';
 
-const PRODUCTNAME = 'Nome do Produto que pode ser bem grande'
-const DESCRIPTION = `a descrição do produto tambem pode ser bem grande, ja que devera conter a maioria dos igrendientes do produto,
-no hamburger por exemplo quantas carnes, e os tipos, a mesma coisa nos outros produtos, como pratos, e sobremesas`
 
 export default function Products() {
+    const { products } = useContext(DataContext);
     const [modalOpen, setModalOpen] = useState(false);
+    const [search, setSearch] = useState('');
+    const [productCategoryFiltered, setProductCategoryFiltered] = useState<string>('all');
 
-    const [ redirect ] = useRedirect();
+    const [previewProducts, setPreviewProducts] = useState(products || []);
+
+    const handleSearch = ()=>{
+        const newPreview = products.filter((p)=>p.name.toLowerCase().includes(search.toLowerCase()));
+        setPreviewProducts(newPreview);
+        setProductCategoryFiltered('all');
+    }
+
+    useEffect(()=>{
+        handleSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [products])
+
+    useEffect(()=>{
+        if(!previewProducts.length && products.length){
+            setPreviewProducts(products)
+            return;
+        }
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [products]);
+
+    useEffect(()=>{
+        if(productCategoryFiltered === 'all'){
+            setPreviewProducts(products);
+            return;
+        }
+        const newPreviewProducts = products.filter(
+            (product) => !!product.categories.find(
+                (category)=>category.name === productCategoryFiltered
+            )
+        );
+        setSearch('');
+        setPreviewProducts(newPreviewProducts);
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [productCategoryFiltered]);
 
     return (
         <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
@@ -28,28 +65,31 @@ export default function Products() {
                 }}
             >
                 <InputSearch
-                styles={{margin: "10px 0"}}
-                    value=''
+                    styles={{margin: "10px 0"}}
+                    value={search}
+                    onChange={(event)=>setSearch(event.target.value)}
+                    onSearch={handleSearch}
                 />
                 <div style={{display: 'flex',textAlign: 'right', alignItems: "center" }}>
-                    <Button 
-                        variant="contained" 
-                        onClick={()=> redirect('/products/create')}
+                    <Link to='/products/create' 
+                        style={{
+                            textDecoration: 'none', 
+                        }} 
                     >
-                        NOVO PRODUTO
-                    </Button>
-                    <Filters />
+                        <Button 
+                            variant="contained" 
+                        >
+                            NOVO PRODUTO
+                        </Button>
+                    </Link>
+                    <Filters 
+                        onSelect={(categoryName)=>setProductCategoryFiltered(categoryName)}
+                    />
                 </div>
             </div>
-            
-            <ProductCard price={50.99} productName={PRODUCTNAME} productDescription={DESCRIPTION} availableStore={true} availableDelivery={true}/>
-            <ProductCard price={34.50} productName={PRODUCTNAME} productDescription={DESCRIPTION} availableStore={true} availableDelivery={true}/>
-            <ProductCard price={49.00} productName={PRODUCTNAME} productDescription={DESCRIPTION} availableStore={true} availableDelivery={true}/>
-            <ProductCard price={10.00} productName={PRODUCTNAME} productDescription={DESCRIPTION} availableStore={true} availableDelivery={true}/>
-            <ProductCard price={3.00} productName={PRODUCTNAME} productDescription={DESCRIPTION} availableStore={true} availableDelivery={true}/>
-            <ProductCard price={5.90} productName={PRODUCTNAME} productDescription={DESCRIPTION} availableStore={true} availableDelivery={true}/>
-            <ProductCard price={38.90} productName={PRODUCTNAME} productDescription={DESCRIPTION} availableStore={true} availableDelivery={true}/>
-        
+            {
+                previewProducts.map((product)=><ProductCard  key={product.id} product={product}/>)
+            }
         </div>
 
     )

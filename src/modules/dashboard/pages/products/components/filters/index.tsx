@@ -8,9 +8,23 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import useContextData from '../../../../../../context/hooks/useContextData';
 
-export default function TemporaryDrawer() {
+interface IProps {
+  onSelect: (value: string)=>void;
+}
+
+export default function TemporaryDrawer(props: IProps) {
   const [open, setOpen] = useState(false);
+
+  const { productCategories } = useContextData();
+
+  const { onSelect } = props;
+
+  const handleOnselect = (value: string) => {
+    onSelect(value);
+    setOpen(false);
+  }
 
   const toggleDrawer =
     (open: boolean) =>
@@ -26,55 +40,6 @@ export default function TemporaryDrawer() {
       setOpen(open);
     };
 
-  const list = () => (
-    <Box
-      sx={{ width: 250 }}
-      role="presentation"
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
-    >
-        <List>
-        {['Listar Todas'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['Sainduiches', 'Combos', 'Pizzas', 'Petiscos', 'Refeições', 'Outros'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['Sobremesas', 'Sorvetes', 'Bolos', 'Doces', 'Outras'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['Bebidas', 'Bebidas Alcoolicas', 'Refrigerantes', 'Sucos', 'Outros'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
-
   return (
     <div>
         <Button onClick={toggleDrawer(true)}>{'Categorias'}<FilterAltOutlinedIcon/></Button>
@@ -83,7 +48,25 @@ export default function TemporaryDrawer() {
         open={open}
         onClose={toggleDrawer(false)}
         >
-        {list()}
+          <List>
+          {['Listar Todas'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton onClick={()=>handleOnselect('all')}>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {productCategories.map((category) => (
+            <ListItem key={category.id} disablePadding>
+              <ListItemButton onClick={()=>handleOnselect(category.name)}>
+                <ListItemText primary={category.name} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
         </Drawer>
     </div>
   );

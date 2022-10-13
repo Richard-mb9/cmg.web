@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import CardMedia from "@mui/material/CardMedia";
 import HomeIcon from '@mui/icons-material/Home';
 import CategoryIcon from '@mui/icons-material/Category';
+import InventoryIcon from '@mui/icons-material/Inventory';
 import DescriptionIcon from '@mui/icons-material/Description';
 import TableBarIcon from '@mui/icons-material/TableBar';
 import GroupIcon from '@mui/icons-material/Group';
@@ -57,7 +58,8 @@ export default function Menu(props: Props) {
             <Divider />
             <List>
                 <LinkDashboardMenu to='/' text='Home' icon={<HomeIcon/>} />
-                <LinkDashboardMenu to='/products' text='Produtos' icon={<CategoryIcon/>} />
+                <LinkDashboardMenu to='/products' text='Produtos' icon={<InventoryIcon/>} />
+                <LinkDashboardMenu to='/products-categories' text='Categorias de produtos' icon={<CategoryIcon/>} />
                 <LinkDashboardMenu to='/orders' text='Pedidos' icon={<DescriptionIcon/>} />
                 <LinkDashboardMenu to='/tables' text='Mesas' icon={<TableBarIcon/>} />
                 <LinkDashboardMenu to='/workers' text='Funcionarios' icon={<GroupIcon/>} />

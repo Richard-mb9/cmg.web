@@ -1,31 +1,40 @@
 import React, { createContext, useState, PropsWithChildren } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 
+export interface IConfig {
+  duration?: number;
+  color?: "error" | "success" | "alert";
+}
+
 const defaultValueContext = {
-    openSnackbar: (message: string, duration: number) => {},
+    openSnackbar: (message: string, config?: IConfig) => {},
     closeSnackbar: () => {}
 }
 
-export const defaultDuaration = 10000;
+const defaultColor = "error";
+
+const defaultDuration = 10000;
 
 export const SnackbarContext = createContext(defaultValueContext);
 
 export default function SnackBar({children}: PropsWithChildren<unknown>){
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('')
-    const [duration, setDuration] = useState(defaultDuaration)
+    const [duration, setDuration] = useState(defaultDuration)
+    const [color, setColor] = useState(defaultColor);
 
-    const triggerSnackbar = (message: string, duration=defaultDuaration) => {
+    const triggerSnackbar = (message: string, config?: IConfig) => {
         setMessage(message)
-        setDuration(duration)
+        setDuration(config?.duration || defaultDuration)
+        setColor(config?.color || 'error');
         setOpen(true)
       }
 
-    const openSnackbar = (message: string, duration=defaultDuaration) => {
+    const openSnackbar = (message: string, config?: IConfig) => {
         if (open === true) {
           setOpen(false)
         } else {
-          triggerSnackbar(message, duration)
+          triggerSnackbar(message, config)
         }
       }
 
@@ -44,7 +53,7 @@ export default function SnackBar({children}: PropsWithChildren<unknown>){
             autoHideDuration={duration}
             ContentProps={{
                 sx: {
-                    backgroundColor: 'orangered'
+                    backgroundColor: color === 'error' ? 'orangered' : 'green'
                 }
             }}
       />

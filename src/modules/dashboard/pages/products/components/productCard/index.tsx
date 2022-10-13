@@ -9,28 +9,44 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import Modal from '../modalEditProduct';
 import ModalDeleteProduct from '../ModalDeleteProduct';
-// import ModalUnavailable from '../ModalUnavailable';
 import CardMedia from "@mui/material/CardMedia";
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-
+import { Link } from 'react-router-dom';
 
 
 import defaultImage from '../../../../../../static/images/semImagem.png';
+import { IProduct } from '../../../../../../utils/interfaces';
+import { useProductsApi } from '../../../../../../context/hooks/integrations';
+import { useSnackbar } from '../../../../../../context/notification/useSnackbar';
+import useContextData from '../../../../../../context/hooks/useContextData';
+import PageLoading from '../../../../../../shared/components/PageLoading';
 
 const style = {
     maxWidth: 550 ,
+    minWidth: 300,
     display: 'flex', 
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
     padding: 1, 
-    margin: 2, 
+    margin: 2,
+    '@media screen and (min-width: 900px)':{
+        flexDirection: 'row', 
+        flexWrap: 'wrap', 
+    },
+    '@media screen and (max-width: 899px)':{
+        flexDirection: 'column', 
+    }
 }
 
 const styleImage = {
     '@media screen and (min-width: 900px)':{
-        width: 151, maxHeight: 200,
+        maxWidth: '150px', 
+        maxHeight: '110px',
+    },
+    '@media screen and (max-width: 899px)':{
+        maxWidth: '150px', 
+        maxHeight: '150px',
+        margin: 'auto',
     }
 }
 
@@ -50,22 +66,28 @@ const styleActions = {
 
 
 interface Iprops {
-    price: number;
-    productName: string;
-    productDescription: string;
-    availableStore: boolean;
-    availableDelivery: boolean;
+    product: IProduct;
 }
 
 
 export default function ProductCard(props: Iprops) {
+    const { product } = props;
+
+    const { id, availableDelivery, availableStore,price, name } = product;
+    const { deleteProduct } = useProductsApi();
+    const [ openSnackbar ] = useSnackbar();
+    const { 
+        products: productsFromContext, 
+        setProducts: setProductsFromContext
+    } = useContextData();
+
     const [modalOpen, setModalOpen] = useState(false);
     const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
-    // const [modalUnavailableOpen, setModalUnavailableOpen] = useState(false);
     const [showAllDescription, setShowAllDescription] = useState(false);
-    const [productAvailableStore, setProductAvailableStore] = useState(props.availableStore);
-    const [productAvailableDelivery, setProductAvailableDelivery] = useState(props.availableDelivery);
-
+    const [productAvailableStore, setProductAvailableStore] = useState(availableStore);
+    const [productAvailableDelivery, setProductAvailableDelivery] = useState(availableDelivery);
+    const [isLoading, setIsLoading] = useState(false);
+    
     const getBackgroundColor = ()=>{
         return productAvailableStore || productAvailableDelivery ? '#fff' : '#ccc'
     }
@@ -78,7 +100,24 @@ export default function ProductCard(props: Iprops) {
         setProductAvailableDelivery(!productAvailableDelivery);
     }
 
-    const description = showAllDescription ? props.productDescription : props.productDescription.substring(0,80) + "...";
+    const handleDeleteProduct = async ()=>{
+        setIsLoading(true);
+        setModalDeleteOpen(false);
+        const response = await deleteProduct(product.id);
+        if(response){
+            openSnackbar("produto excluido", {color: 'success'})
+            const newProducts = productsFromContext.filter((p)=>p.id !== product.id);
+            setProductsFromContext(newProducts);
+        }
+        setIsLoading(false);
+    }
+
+
+    const description = showAllDescription 
+        ? (product.description || '') 
+        : (product.description || '').length >= 80 
+            ? (product.description || '').substring(0,80) + "..."
+            : (product.description || '');
 
     return (
         <Card sx={{ 
@@ -90,33 +129,35 @@ export default function ProductCard(props: Iprops) {
                     component="img"
                     className='productImageCard'
                     sx={{ ...styleImage}}
-                    image={defaultImage}
+                    src={product.imageUrl || defaultImage}
                     alt="Live from space album cover"
                 />
                 
-                <Typography sx={{marginTop:1}} component="div" variant="subtitle1">
-                    {`R$ ${props.price.toFixed(2)}`}
+                <Typography sx={{marginTop:1, textAlign: 'center'}} component="div" variant="subtitle1">
+                    {`R$ ${price.toFixed(2)}`}
                 </Typography>
                 
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: 370 }}>
                 <CardContent sx={{ flex: '1 0 auto' }}>
                     <Typography component="div" variant="h6">
-                        {props.productName}
+                        {name}
                     </Typography>
+                    {product.description && (<>
                     <Typography variant="subtitle1" color="text.secondary" component="div" whiteSpace={'normal'}>
-                        <Tooltip title={props.productDescription}>
+                        <Tooltip title={product.description || ''}>
                             <span>{description}</span>
                         </Tooltip>
                     </Typography>
-                    <Tooltip title={showAllDescription ? "Mostrar Menos" : "Mostrar Mais"}>
+                    {(product.description || '').length >= 80 && (<><Tooltip title={showAllDescription ? "Mostrar Menos" : "Mostrar Mais"}>
                         <IconButton 
                             sx={{width: "100%", borderRadius: 0, border: "solid 1px #eee"}}
                             onClick={()=>setShowAllDescription(!showAllDescription)}
                         >
                             {showAllDescription ? <ExpandLessIcon/> : <ExpandMoreIcon />}
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip></>)}
+                    </>)}
                 </CardContent>
             </Box>
             <Box sx={styleActions}>
@@ -124,23 +165,28 @@ export default function ProductCard(props: Iprops) {
                     <FormControlLabel
                         control={<Switch checked={productAvailableStore} />}
                         label={"Disponivel na loja"}
+                        disabled={true}
                         onClick={handleProductAvailableStore}
-                        //disabled={!hasRole("UPDATE_USERS")}
                     />
                     <FormControlLabel
                         control={<Switch checked={productAvailableDelivery} />}
                         label={"Disponivel para delivery"}
+                        disabled={true}
                         onClick={handleProductAvailableDelivery}
-                        //disabled={!hasRole("UPDATE_USERS")}
                     />
                 </Box>
                 <Box>
-                    <Button 
-                        onClick={()=>setModalOpen(!modalOpen)}
-                        sx={{margin: 1}} variant="outlined"
+                    <Link to={`/products/${id}` }
+                        style={{
+                            textDecoration: 'none', 
+                        }} 
                     >
-                        editar
-                    </Button>
+                        <Button 
+                            sx={{margin: 1}} variant="outlined"
+                        >
+                            editar
+                        </Button>
+                    </Link>
                     <Button 
                         onClick={()=>setModalDeleteOpen(!modalDeleteOpen)}
                         sx={{margin: 1}} variant="outlined"
@@ -151,11 +197,12 @@ export default function ProductCard(props: Iprops) {
                 </Box>
             </Box>
             <Modal open={modalOpen} setOpen={setModalOpen}/>
-            <ModalDeleteProduct open={modalDeleteOpen} setOpen={setModalDeleteOpen}/>
-            {/* <ModalUnavailable 
-                open={modalUnavailableOpen} 
-                setOpen={setModalUnavailableOpen} 
-                action={handleProductAvailable}/> */}
+            <ModalDeleteProduct 
+                open={modalDeleteOpen} 
+                setOpen={setModalDeleteOpen}
+                action={handleDeleteProduct}
+            />
+            <PageLoading open={isLoading}/>
         </Card>
     )
 }

@@ -1,6 +1,6 @@
 import React, { createContext ,useContext, PropsWithChildren } from 'react';
 import { BaseApiContext } from './baseApi';
-import { IAddress, IPersonalData, TelephoneType } from '../../utils/interfaces';
+import { IAddress, IPersonalData, IProduct, IProductCategories, TelephoneType } from '../../utils/interfaces';
 import axios from 'axios';
 import { useSnackbar } from '../notification/useSnackbar';
 
@@ -15,6 +15,8 @@ interface IAllPersonalData {
     addresses: IAddress[];
     telephones: TelephoneType[];
     store: IPersonalData;
+    products: IProduct[];
+    productsCategories: IProductCategories[];
 }
 
 
@@ -76,7 +78,14 @@ export default function PersonalDataIntegration({children}: PropsWithChildren<un
         try{
             const data = new FormData();
             data.append('image',image)
-            const response = await api.put<IPersonalData>(`/stores/${storeId}/image`, data)
+            const response = await api.put<IPersonalData>(
+                `/stores/${storeId}/image`, 
+                data,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
             return response.data;
         }
         catch(error: unknown){

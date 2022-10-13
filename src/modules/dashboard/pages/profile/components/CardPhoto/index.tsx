@@ -60,7 +60,6 @@ export default function CardPhoto(props: IProps){
 
     const saveChanges = async ()=>{
         setIsLoading(true);
-        console.log(personalData)
         if(selectedFile && personalData?.id){
             const response = await updateImageStore(personalData.id, selectedFile);
             if(response && personalData){

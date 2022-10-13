@@ -40,3 +40,21 @@ export interface TelephoneType {
     number: string;
 }
 
+export interface IProductCategories {
+    id: number;
+    name: string;
+    storeId: number;
+}
+
+export interface IProduct {
+    id: number;
+    storeId: number;
+    imageUrl?: string;
+    name: string;
+    price: number;
+    description?: string;
+    availableDelivery: boolean;
+    availableStore: boolean;
+    categories: IProductCategories[];
+}
+

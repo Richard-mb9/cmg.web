@@ -5,6 +5,8 @@ import AddressesIntegrationProvider from './adresses';
 import PersonalDataIntegrationProvider from './personalData';
 import TelephonesIntegrationProvider from './telephones';
 import BaseApiProvider from './baseApi';
+import ProductsIntegrationProvider from './products';
+import ProductsCategoriesProvider from './productCategories';
 
 
 export default function IntegationContext({children}: PropsWithChildren<unknown>){
@@ -14,7 +16,11 @@ export default function IntegationContext({children}: PropsWithChildren<unknown>
                 <AddressesIntegrationProvider>
                     <PersonalDataIntegrationProvider>
                         <TelephonesIntegrationProvider>
-                            {children}
+                            <ProductsIntegrationProvider>
+                                <ProductsCategoriesProvider>
+                                    {children}
+                                </ProductsCategoriesProvider>
+                            </ProductsIntegrationProvider>
                         </TelephonesIntegrationProvider>
                     </PersonalDataIntegrationProvider>
                 </AddressesIntegrationProvider>

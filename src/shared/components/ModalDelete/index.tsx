@@ -20,15 +20,21 @@ interface IProps {
     open: boolean;
     message: string;
     setOpen: (open: boolean) => void;
+    action: ()=>void;
 }
 
 
-export default function (props: IProps) {
-    const { open, setOpen, message } = props;
+export default function ModalDelete(props: IProps) {
+    const { open, setOpen, message, action } = props;
 
     const handleClose = () => {
         setOpen(false);
     };
+
+    const handleAction = () => {
+        action();
+        handleClose();
+    }
 
     return (
         <div>
@@ -46,7 +52,7 @@ export default function (props: IProps) {
                     </Box>
                     <Box sx={{display: 'flex', justifyContent: 'space-evenly'}}>
                         <Button
-                            onClick={() => { }}
+                            onClick={handleAction}
                             color={'success'}
                             sx={{ margin: 1 }} variant="outlined"
                         >

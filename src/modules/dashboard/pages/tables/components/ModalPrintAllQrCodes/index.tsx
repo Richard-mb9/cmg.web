@@ -30,7 +30,7 @@ interface IProps {
     qrCodes: IQrCode[];
 }
 
-export default function (props: IProps) {
+export default function ModalPrintAllQrCodes(props: IProps) {
     const { open, setOpen, qrCodes } = props;
 
     const handleClose = () => {
