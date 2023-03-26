@@ -40,9 +40,6 @@ const styles = {
     }
 }
 
-type AlertType = 'error' | 'warning' | 'info' | 'success';
-type displayAlertType = 'none' | 'flex';
-
 interface IHandlerSetProduct {
     imageUrl?: string;
     name?: string;
@@ -74,7 +71,7 @@ export default function UpdateProduct() {
     const [product, setProduct] = useState<IProduct | undefined>(getCurrentProduct());
     const [isLoading, setIsLoading] = useState(false);
     const [inputPriceIsFocused, setInputPriceIsFocused] = useState(false);
-    const [valueProductPrice, setValueProductPrice] = useState(product?.price.toString() || '');
+    const [valueProductPrice, setValueProductPrice] = useState(product?.price.toString() || '0');
 
     const handleSetProduct = (data: IHandlerSetProduct) => {
         if(product){
@@ -98,7 +95,12 @@ export default function UpdateProduct() {
     }
 
     const saveChanges = async ()=>{
+        if(!!!product?.categories.length){
+            openSnackbar("O produto precisa ter pelo menos uma categora selecionada", {color: 'error'})
+            return
+        }
         setIsLoading(true);
+        console.log(product?.categories.length)
         if(product && id){
             const response =  await updateProduct(parseInt(id), {
                 name: product.name,
@@ -134,21 +136,26 @@ export default function UpdateProduct() {
 
     useEffect(()=>{
         if(productFromContext){
+            console.log(getCurrentProduct())
             setProduct(getCurrentProduct());
         }
     }, [productFromContext, getCurrentProduct]);
 
+
+
     useEffect(()=>{
         if(product){
-            if(parseFloat(valueProductPrice).toString() !== 'NaN'){
-                const value = parseFloat(valueProductPrice).toFixed(2)
+            if(product.price && parseFloat(valueProductPrice).toString() === '0'){
+                setValueProductPrice(product.price.toFixed(2).toString());
+            }
+            else if(parseFloat(valueProductPrice).toString() !== 'NaN'){
+                const value = parseFloat(valueProductPrice).toFixed(2);
                 setProduct({...product, price: parseFloat(value)});
             }
             else {
                 setProduct({...product, price: 0.0});
             }
-        }
-        
+        }        
     }, [valueProductPrice, product]);
 
     return (<>
